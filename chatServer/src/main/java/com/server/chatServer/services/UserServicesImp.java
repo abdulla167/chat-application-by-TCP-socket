@@ -138,4 +138,10 @@ public class UserServicesImp implements UserServices {
     public void setUserDAO(UserDAO userDAO) {
         this.userDAO = userDAO;
     }
+
+    public JSONObject JsonResponse(String endPoint, boolean response, String description, JSONObject payload){
+        JSONObject jsonObject = new JSONObject();
+
+        return jsonObject;
+    }
 }
