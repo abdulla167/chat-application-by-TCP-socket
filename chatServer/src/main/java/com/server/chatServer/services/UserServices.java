@@ -27,4 +27,6 @@ public interface UserServices {
     public User getUser(String phone);
 
     public boolean addFriend(String userPhone, String friendPhone);
+
+    public void notifyNewFriend(String phone, String receiverPhone);
 }

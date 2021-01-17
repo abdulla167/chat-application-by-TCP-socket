@@ -86,4 +86,7 @@ public class Message implements Serializable {
                 '}';
     }
 
+    public String jsonString() {
+        return "{\"sendTo\":" + this.theSender + ",\"sendFrom\":" + this.theReceiver + ",\"message\":" + this.message + ",\"date\":" + this.date+"}";
+    }
 }

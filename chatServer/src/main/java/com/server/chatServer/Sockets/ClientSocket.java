@@ -60,6 +60,14 @@ public class ClientSocket implements Runnable {
         this.phone = phone;
     }
 
+    public PrintWriter getSender() {
+        return sender;
+    }
+
+    public void setSender(PrintWriter sender) {
+        this.sender = sender;
+    }
+
     @Override
     public void run() {
         while (true){
@@ -168,6 +176,7 @@ public class ClientSocket implements Runnable {
                         User theUser = this.userServices.getUser(phone);
                         theUser.setPassword(null);
                         response.put("payload", new JSONObject(theUser.jsonString()));
+                        this.userServices.notifyNewFriend(this.phone, phone);
                     }else {
                         response.put("description", "This phone is not found");
                     }

@@ -1,6 +1,8 @@
 package com.server.chatServer.services;
 
 import com.server.chatServer.DAO.UserDAO;
+import com.server.chatServer.Sockets.ClientSocket;
+import com.server.chatServer.Sockets.ServerSocket;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
 import org.json.JSONObject;
@@ -55,6 +57,16 @@ public class UserServicesImp implements UserServices {
     @Override
     @Transactional
     public boolean sendMessage(Message theMessage) {
+        List<ClientSocket> clientSockets = ServerSocket.getClients();
+        for (ClientSocket client : clientSockets)
+        {
+            if (client.getPhone().equals(theMessage.getTheReceiver())){
+                JSONObject json = new JSONObject();
+                json.put("endpoint","sendMessage");
+                json.put("payload",theMessage.jsonString());
+                client.getSender().println(json.toString());
+            }
+        }
         return userDAO.saveMessage(theMessage);
     }
 
@@ -88,6 +100,21 @@ public class UserServicesImp implements UserServices {
     @Transactional
     public boolean addFriend(String userPhone, String friendPhone) {
         return this.userDAO.addFriend(userPhone, friendPhone);
+    }
+
+    @Override
+    public void notifyNewFriend(String phone, String receiverPhone) {
+        User theUser = this.userDAO.getUser(phone);
+        List<ClientSocket> clientSockets = ServerSocket.getClients();
+        for (ClientSocket client : clientSockets)
+        {
+            if (client.getPhone().equals(receiverPhone)){
+                JSONObject json = new JSONObject();
+                json.put("endpoint","newFriend");
+                json.put("payload", new JSONObject(theUser.jsonString()));
+                client.getSender().println(json.toString());
+            }
+        }
     }
 
     public UserDAO getUserDAO() {
