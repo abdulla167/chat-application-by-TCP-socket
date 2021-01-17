@@ -116,7 +116,6 @@ public class ClientSocket implements Runnable {
                     String phoneNumber = payload.getString("phone");
                     String password = payload.getString("password");
                     User result = this.userServices.authenticateUser(phoneNumber, password);
-
                     response.put("endpoint", request);
                     if (result != null) {
                         this.phone = phoneNumber;
@@ -132,6 +131,7 @@ public class ClientSocket implements Runnable {
                         response.put("payload", new ArrayList<>());
                     }
                     // SEND THE JSON OBJECT AS STRING
+                    System.out.println(response.toString());
                     this.sender.println(response.toString());
                 }
                 // CHECK IF REQUEST IS FOR SENDING MESSAGE
