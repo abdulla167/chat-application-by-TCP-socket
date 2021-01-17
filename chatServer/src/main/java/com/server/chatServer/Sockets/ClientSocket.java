@@ -136,7 +136,7 @@ public class ClientSocket implements Runnable {
                     this.sender.println(response.toString());
                 }
                 // CHECK IF REQUEST IS FOR SENDING MESSAGE
-                else if(request.equals("sendMessage")){
+                else if(request.equals("sendMessage")) {
                     // GET SENDER USER
                     User senderUser = userServices.getUser(this.phone);
                     // GET RECEIVER USER
