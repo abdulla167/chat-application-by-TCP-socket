@@ -18,7 +18,7 @@ public interface UserServices {
 
     public boolean sendMessage(Message theMessage);
 
-    public List<Message> getConversation(String senderPhone, String receiverPhone);
+    public List<JSONObject> getConversation(String senderPhone, String receiverPhone);
 
     public void saveLastLogin(String phone);
 

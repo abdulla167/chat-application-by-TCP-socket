@@ -43,7 +43,20 @@ public class UserDAOImp implements UserDAO{
 
     @Override
     public List<Message> getConversation(String senderPhone, String receiverPhone) {
-        return null;
+        User sender = this.getUser(senderPhone);
+        User receiver = this.getUser(receiverPhone);
+        Session newSession = entityManager.unwrap(Session.class);
+        try{
+            Query theQuery =
+                    newSession.createQuery("from message where message.theSender=:senderNumber  and message.theReceiver=:receiverNumber");
+            theQuery.setParameter("senderNumber", sender.getPhone());
+            theQuery.setParameter("receiverNumber", receiver.getPhone());
+            List<Message> messages = (List<Message>) theQuery.getResultList();
+            return messages;
+        }catch (Exception e){
+            return null;
+        }
+
     }
 
     @Override
