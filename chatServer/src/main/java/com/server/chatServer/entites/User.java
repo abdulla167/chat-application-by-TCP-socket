@@ -126,4 +126,8 @@ public class User {
                 ", password='" + password + '\'' +
                 '}';
     }
+
+    public String jsonString(){
+        return "{\"username\":"+ this.username +",\"phone\":" + this.phone + "\"password\":" +this.password +"}";
+    }
 }

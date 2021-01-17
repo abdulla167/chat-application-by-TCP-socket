@@ -5,6 +5,7 @@ import com.server.chatServer.entites.User;
 import com.server.chatServer.services.UserServices;
 import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -18,6 +19,7 @@ import java.util.Date;
 import java.util.List;
 
 @Component
+@Scope("prototype")
 public class ClientSocket implements Runnable{
     // FIELDS
     private Socket clientConnection;

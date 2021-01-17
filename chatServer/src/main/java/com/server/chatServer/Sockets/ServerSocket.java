@@ -41,7 +41,8 @@ public class ServerSocket {
             Socket clientSocket = serverSocket.accept();
             ClientSocket client = (ClientSocket) this.context.getBean("clientSocket");
             client.setClientConnection(clientSocket);
-            client.run();
+            Thread th = new Thread(client);
+            th.start();
             this.clients.add(client);
         }
     }
