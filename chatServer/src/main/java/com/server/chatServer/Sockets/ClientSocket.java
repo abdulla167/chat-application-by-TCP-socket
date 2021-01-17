@@ -117,17 +117,18 @@ public class ClientSocket implements Runnable {
                     String password = payload.getString("password");
                     User result = this.userServices.authenticateUser(phoneNumber, password);
                     response.put("endpoint",request);
-                    response.put("response", result);
                     if(result != null)
                     {
                         this.phone = phoneNumber;
                         this.userServices.setUserStatus(true, this.phone);
                         List<JSONObject> friendsList = this.userServices.getUserFriends(phone);
+                        response.put("response", true);
                         response.put("description", "got friend list successfully");
                         response.put("friends", friendsList);
                         response.put("user", new JSONObject(result.jsonString()));
                     }
                     else{
+                        response.put("response", false);
                         response.put("description", "invalid user or password");
                         response.put("payload",new ArrayList<>());
                     }
