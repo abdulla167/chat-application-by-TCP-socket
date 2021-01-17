@@ -74,27 +74,21 @@ public class ClientSocket implements Runnable {
     public void run() {
         while (true) {
             // GET REQUEST FROM THE USER
-            String message = null;
             try {
+                String message = null;
                 message = receiver.readLine();
-            } catch (IOException e) {
-                this.userServices.setUserStatus(false, this.phone);
-                this.userServices.saveLastLogin(this.phone);
-                break;
-            }
-            if (message == null)
-                continue;
-            System.out.println(message);
-            // CONVERT STRING TO JSON OBJECT
-            JSONObject json = new JSONObject(message);
-            // GET endpoint FIELD FROM THE JSON OBJECT
-            String request = json.getString("endpoint");
-            System.out.println(request);
-            // GET PAYLOAD SECTION FROM THE JSON OJECT
-            JSONObject payload = json.getJSONObject("payload");
-            // MAKE NEW JSON OBJECT TO PUT THE RESPONSE FOR THE CLIENT IN IT
-            JSONObject response = new JSONObject();
-            try {
+                if (message == null)
+                    continue;
+                System.out.println(message);
+                // CONVERT STRING TO JSON OBJECT
+                JSONObject json = new JSONObject(message);
+                // GET endpoint FIELD FROM THE JSON OBJECT
+                String request = json.getString("endpoint");
+                System.out.println(request);
+                // GET PAYLOAD SECTION FROM THE JSON OJECT
+                JSONObject payload = json.getJSONObject("payload");
+                // MAKE NEW JSON OBJECT TO PUT THE RESPONSE FOR THE CLIENT IN IT
+                JSONObject response = new JSONObject();
                 // CHECK IF REQUEST IS FOR REGISTERATION
                 if (request.equals("register")) {
                     System.out.println("register");
@@ -115,23 +109,25 @@ public class ClientSocket implements Runnable {
                         response.put("description", "failed to add user");
                     }
                     // SEND THE JSON OBJECT AS STRING
-                    System.out.println("will send now");
+                    System.out.println(response.toString());
                     this.sender.println(response.toString());
                 } else if (request.equals("login")) {
                     System.out.println("login");
                     String phoneNumber = payload.getString("phone");
                     String password = payload.getString("password");
                     User result = this.userServices.authenticateUser(phoneNumber, password);
+
                     response.put("endpoint", request);
-                    response.put("response", result != null);
                     if (result != null) {
                         this.phone = phoneNumber;
                         this.userServices.setUserStatus(true, this.phone);
                         List<JSONObject> friendsList = this.userServices.getUserFriends(phone);
+                        response.put("response", true);
                         response.put("description", "got friend list successfully");
                         response.put("friends", friendsList);
                         response.put("user", new JSONObject(result.jsonString()));
                     } else {
+                        response.put("response", false);
                         response.put("description", "invalid user or password");
                         response.put("payload", new ArrayList<>());
                     }
@@ -192,10 +188,10 @@ public class ClientSocket implements Runnable {
                     this.userServices.saveLastLogin(this.phone);
                     break;
                 }
-            } catch (DataIntegrityViolationException d) {
-                response.put("endpoint", request);
-                response.put("response", false);
-                this.sender.println(response.toString());
+            }  catch (IOException e) {
+                this.userServices.setUserStatus(false, this.phone);
+                this.userServices.saveLastLogin(this.phone);
+                break;
             }
         }
     }

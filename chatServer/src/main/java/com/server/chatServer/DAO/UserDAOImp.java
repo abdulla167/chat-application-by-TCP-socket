@@ -25,16 +25,15 @@ public class UserDAOImp implements UserDAO{
     }
 
     @Override
-    public boolean registerUser(User user)  {
-        System.out.println(entityManager);
-        Session newSession = entityManager.unwrap(Session.class);
+    public boolean registerUser(User user) {
         try {
+            User theUser = this.getUser(user.getPhone());
+            return false;
+        }catch (NoResultException nre){
+            Session newSession = entityManager.unwrap(Session.class);
             newSession.save(user);
-        } catch (DataIntegrityViolationException d){
-          return false;
+            return true;
         }
-
-        return true;
     }
 
     @Override
@@ -62,7 +61,6 @@ public class UserDAOImp implements UserDAO{
         }catch (Exception e){
             return null;
         }
-
     }
 
     @Override
