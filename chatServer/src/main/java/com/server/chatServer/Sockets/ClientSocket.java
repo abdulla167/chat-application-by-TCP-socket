@@ -6,7 +6,6 @@ import com.server.chatServer.services.UserServices;
 import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -39,12 +38,6 @@ public class ClientSocket implements Runnable {
     // METHODS
     public ClientSocket() {
     }
-
-//    public ClientSocket(Socket clientSocket) throws IOException {
-//        this.clientConnection = clientSocket;
-//        this.receiver = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-//        this.sender = new PrintWriter(clientSocket.getOutputStream(), true);
-//    }
 
     public UserServices getUserServices() {
         return userServices;
@@ -188,7 +181,7 @@ public class ClientSocket implements Runnable {
                     this.userServices.saveLastLogin(this.phone);
                     break;
                 }
-            }  catch (IOException e) {
+            } catch (IOException e) {
                 this.userServices.setUserStatus(false, this.phone);
                 this.userServices.saveLastLogin(this.phone);
                 break;
