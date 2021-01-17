@@ -38,10 +38,11 @@ public class ServerSocket {
 
     public void start() throws IOException {
         while (true){
-            Socket clientSocket = serverSocket.accept();
+            Socket clientSocket = serverSocket.accept(); //
+            /////
             ClientSocket client = (ClientSocket) this.context.getBean("clientSocket");
             client.setClientConnection(clientSocket);
-            client.run();
+            new Thread(client).start();
             this.clients.add(client);
         }
     }

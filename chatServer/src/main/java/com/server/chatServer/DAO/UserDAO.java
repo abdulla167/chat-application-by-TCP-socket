@@ -10,7 +10,7 @@ public interface UserDAO {
 
     public boolean registerUser(User user);
 
-    public boolean authenticateUser(String phone, String password);
+    public User authenticateUser(String phone, String password);
 
     public List<Message> getConversation(String senderPhone, String receiverPhone);
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "user")
-@Table(name= "user")
+@Table(name = "user")
 public class User {
     // FIELDS
     @Id
@@ -27,16 +27,16 @@ public class User {
     private Timestamp lastLogin;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="tbl_friends",
-            joinColumns=@JoinColumn(name="personId"),
-            inverseJoinColumns=@JoinColumn(name="friendId")
+    @JoinTable(name = "tbl_friends",
+            joinColumns = @JoinColumn(name = "personId"),
+            inverseJoinColumns = @JoinColumn(name = "friendId")
     )
     private List<User> friends;
 
     @ManyToMany(fetch = FetchType.EAGER)
-    @JoinTable(name="tbl_friends",
-            joinColumns=@JoinColumn(name="friendId"),
-            inverseJoinColumns=@JoinColumn(name="personId")
+    @JoinTable(name = "tbl_friends",
+            joinColumns = @JoinColumn(name = "friendId"),
+            inverseJoinColumns = @JoinColumn(name = "personId")
     )
     private List<User> friendOf;
 
@@ -48,7 +48,7 @@ public class User {
         this.friendOf.add(friend);
     }
 
-    public void initializeIfNull(List<User> l){
+    public void initializeIfNull(List<User> l) {
         if (l == null) {
             l = new ArrayList<User>();
         }
@@ -110,7 +110,8 @@ public class User {
         this.password = password;
     }
 
-    public User(){}
+    public User() {
+    }
 
     public User(String phone, String username, String password) {
         this.phone = phone;
@@ -125,5 +126,9 @@ public class User {
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
                 '}';
+    }
+
+    public String jsonString() {
+        return "{\"username\":" + this.username + ",\"phone\":" + this.phone + ",\"password\":" + this.password + "}";
     }
 }

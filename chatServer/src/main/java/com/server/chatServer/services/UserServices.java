@@ -11,7 +11,7 @@ public interface UserServices {
 
     public boolean registerNewUser(User newUser);
 
-    public boolean authenticateUser(String phone, String password);
+    public User authenticateUser(String phone, String password);
 
     public List<User> getUserFriends(String phone);
 

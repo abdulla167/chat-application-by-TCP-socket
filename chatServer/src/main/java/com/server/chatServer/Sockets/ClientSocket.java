@@ -5,6 +5,7 @@ import com.server.chatServer.entites.User;
 import com.server.chatServer.services.UserServices;
 import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
@@ -18,7 +19,8 @@ import java.util.Date;
 import java.util.List;
 
 @Component
-public class ClientSocket implements Runnable{
+@Scope("prototype")
+public class ClientSocket implements Runnable {
     // FIELDS
     private Socket clientConnection;
     private BufferedReader receiver;
@@ -64,6 +66,9 @@ public class ClientSocket implements Runnable{
             try {
                 // GET REQUEST FROM THE USER
                 String message = receiver.readLine();
+                if(message == null)
+                    continue;
+                System.out.println(message);
                 // CONVERT STRING TO JSON OBJECT
                 JSONObject json = new JSONObject(message);
                 // GET endpoint FIELD FROM THE JSON OBJECT
@@ -80,18 +85,18 @@ public class ClientSocket implements Runnable{
                     User newUser = new User(payload.getString("phone"), payload.getString("username"), payload.getString("password"));
                     newUser.setActive(true);
                     boolean result = this.userServices.registerNewUser(newUser);
-                    response.put("endpoint",request);
-                    response.put("response", true);
+                    response.put("endpoint", request);
+                    response.put("response", result);
                     // CHECK IF USER SAVED SUCCESSFULLY IN THE DATABASE OR NOT
                     if(result)
                     {
                         this.phone = payload.getString("phone");
                         // PUT THE RESPONSE FOR THE SUCCESS REQUEST IN THE JSON OBJECT
                         response.put("description", "User added successfully");
+                        response.put("user", new JSONObject(newUser.jsonString()));
                     }
                     else {
                         // PUT THE RESPONSE FOR THE FAILING REQUEST IN THE JSON OBJECT
-                        response.put("response", false);
                         response.put("description", "failed to add user");
                     }
                     // SEND THE JSON OBJECT AS STRING
@@ -103,16 +108,17 @@ public class ClientSocket implements Runnable{
                     String phoneNumber = payload.getString("phone");
                     String password = payload.getString("password");
                     List<User> l = new ArrayList<>();
-                    boolean result = this.userServices.authenticateUser(phoneNumber, password);
+                    User result = this.userServices.authenticateUser(phoneNumber, password);
                     response.put("endpoint",request);
                     response.put("response", result);
-                    if(result)
+                    if(result != null)
                     {
                         this.phone = phoneNumber;
                         this.userServices.setUserStatus(true, this.phone);
                         List<User> friendsList = this.userServices.getUserFriends(phone);
                         response.put("description", "got friend list successfully");
-                        response.put("payload", friendsList);
+                        response.put("friends", friendsList);
+                        response.put("user", new JSONObject(result.jsonString()));
                     }
                     else{
                         response.put("description", "invalid user or password");
@@ -161,7 +167,7 @@ public class ClientSocket implements Runnable{
                         response.put("description", "Friend is addded successfully");
                         User theUser = this.userServices.getUser(phone);
                         theUser.setPassword(null);
-                        response.put("payload", theUser);
+                        response.put("payload", new JSONObject(theUser.jsonString()));
                     }else {
                         response.put("description", "This phone is not found");
                     }

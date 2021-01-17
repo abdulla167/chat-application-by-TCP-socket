@@ -35,7 +35,7 @@ public class UserServicesImp implements UserServices {
 
     @Override
     @Transactional
-    public boolean authenticateUser(String phone, String password) {
+    public User authenticateUser(String phone, String password) {
         return this.userDAO.authenticateUser(phone, password);
     }
 
