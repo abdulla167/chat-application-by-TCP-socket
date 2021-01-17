@@ -57,7 +57,6 @@ public class UserDAOImp implements UserDAO{
         User receiver = this.getUser(receiverPhone);
         Session newSession = entityManager.unwrap(Session.class);
         try{
-            System.out.println("getConv");
             Query theQuery =
                     newSession.createQuery("from message where (theSender.phone=:senderNumber  and theReceiver.phone=:receiverNumber) or " +
                             "(theSender.phone=:receiverNumber  and theReceiver.phone=:senderNumber)");
@@ -117,13 +116,6 @@ public class UserDAOImp implements UserDAO{
     }
 
     @Override
-    public List<Message> getNewMessages(String receiverPhone) {
-        Session newSession = entityManager.unwrap(Session.class);
-
-        return null;
-    }
-
-    @Override
     public User getUser(String phone) throws NoResultException{
         Session newSession = entityManager.unwrap(Session.class);
         Query theQuery =
@@ -137,5 +129,4 @@ public class UserDAOImp implements UserDAO{
             return theUsers.get(0);
         }
     }
-
 }

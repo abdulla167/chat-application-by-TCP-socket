@@ -12,7 +12,9 @@ public class ChatServerApplication {
 
 	public static void main(String[] args) throws IOException {
 		ApplicationContext context = SpringApplication.run(ChatServerApplication.class, args);
+		// GET SERVER INSTANCE FROM SPRING BOOT CONTAINER
 		ServerSocket serverSocket = (ServerSocket) context.getBean("serverSocket", context);
+		// START THE SERVER
 		serverSocket.start();
 	}
 

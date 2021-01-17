@@ -18,12 +18,9 @@ public interface UserDAO {
 
     public boolean addFriend(String userPhone, String friendPhone);
 
-
     public void setUserStatus(boolean active, String phone);
 
     public void saveLastLogin(String phone);
-
-    public List<Message> getNewMessages(String receiverPhone);
 
     public User getUser(String phone);
 

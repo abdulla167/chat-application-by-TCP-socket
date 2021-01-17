@@ -8,10 +8,8 @@ import com.server.chatServer.entites.User;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,12 +19,14 @@ public class UserServicesImp implements UserServices {
     @Autowired
     private UserDAO userDAO;
 
+    /* METHOD TO SET USER ONLINE OR OFFLINE*/
     @Override
     @Transactional
     public void setUserStatus(boolean active, String phone) {
         userDAO.setUserStatus(active, phone);
     }
 
+    /* METHOD TO REGISTER NEW USER*/
     @Override
     @Transactional
     public boolean registerNewUser(User newUser) {
@@ -38,12 +38,14 @@ public class UserServicesImp implements UserServices {
         }
     }
 
+    /* METHOD TO AUTHENTICATE THE USER BY ITS PHONE AND PASSWORD*/
     @Override
     @Transactional
     public User authenticateUser(String phone, String password) {
         return this.userDAO.authenticateUser(phone, password);
     }
 
+    /* METHOD TO GET THE USER LIST OF FRIENDS*/
     @Override
     @Transactional
     public List<JSONObject> getUserFriends(String phone) {
@@ -52,10 +54,10 @@ public class UserServicesImp implements UserServices {
         for (User user:friends){
             friendsJsonList.add(new JSONObject(user.jsonString()));
         }
-
         return friendsJsonList;
     }
 
+    /* METHOD TO SEND MESSAGE TO THE RECEIVER IF ONLINE AND SAVE IT IN THE DATABASE*/
     @Override
     @Transactional
     public boolean sendMessage(Message theMessage, JSONObject payload) {
@@ -72,6 +74,7 @@ public class UserServicesImp implements UserServices {
         return userDAO.saveMessage(theMessage);
     }
 
+    /* METHOD TO GET CONVERSATION BETWEEN TWO USERS*/
     @Override
     @Transactional
     public JSONArray getConversation(String senderPhone, String receiverPhone) {
@@ -88,32 +91,31 @@ public class UserServicesImp implements UserServices {
         }
     }
 
+    /* METHOD TO SET USER LAST SEEN DATE*/
     @Override
     @Transactional
-
-    public void saveLastLogin(String phone) {
+    public void saveLastSeen(String phone) {
         this.userDAO.saveLastLogin(phone);
     }
 
-    @Override
-    @Transactional
-    public List<Message> getNewMessages(String receiverPhone) {
-        this.userDAO.getNewMessages(receiverPhone);
-        return null;
-    }
 
+    /* METHOD TO GET USER BY HIS PHONE*/
     @Override
     @Transactional
     public User getUser(String phone) {
         return userDAO.getUser(phone);
     }
 
+    /* METHOD TO ADD FIREND TO USER*/
     @Override
     @Transactional
     public boolean addFriend(String userPhone, String friendPhone) {
         return this.userDAO.addFriend(userPhone, friendPhone);
     }
 
+    /* METHOD TO NOTIFY USER THAT SOMEONE ADDED HIM AS
+    *A FRIEND AND ADD HIM TO HIS LIST OF FRIENDS
+    */
     @Override
     public void notifyNewFriend(String phone, String receiverPhone) {
         User theUser = this.userDAO.getUser(phone);

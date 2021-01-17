@@ -9,17 +9,18 @@ import java.util.ArrayList;
 
 @Component
 public class ServerSocket {
+    //FIELDS
     private java.net.ServerSocket serverSocket;
     private static ArrayList<ClientSocket> clients;
     private int portNumber;
     private boolean active = false;
     private ApplicationContext context;
-
-
+    // ARRAY OF CLIENTS SOCKETS CONNECTED TO THE SERVER
     public static ArrayList<ClientSocket> getClients() {
         return clients;
     }
 
+    //METHODS
     public ServerSocket(ApplicationContext context) throws IOException {
         this.portNumber = 6666;
         serverSocket = new java.net.ServerSocket(this.portNumber);
@@ -36,6 +37,7 @@ public class ServerSocket {
         this.portNumber = portNumber;
     }
 
+    /* METHOD USED TO START THE SERVER*/
     public void start() throws IOException {
         while (true){
             Socket clientSocket = serverSocket.accept();
@@ -43,7 +45,6 @@ public class ServerSocket {
             client.setClientConnection(clientSocket);
             Thread th = new Thread(client);
             th.start();
-
             this.clients.add(client);
         }
     }

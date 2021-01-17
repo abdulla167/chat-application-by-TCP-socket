@@ -85,13 +85,16 @@ public class ClientSocket implements Runnable {
                     System.out.println("register");
                     // CREATE NEW USER AND PUT THE DATA OF THE NEW USER IN IT FROM PAYLOAD SECTION
                     User newUser = new User(payload.getString("phone"), payload.getString("username"), payload.getString("password"));
+                    // SET HIM AS ACTIVE USER
                     newUser.setActive(true);
+                    // GET RESULT OF USER REGISTERTION IF SUCCESS OR FAIL
                     boolean result = this.userServices.registerNewUser(newUser);
-                    System.out.println("repqeated"+result);
+                    // ADD ENDPOINT AND RESPONSE RESULT TO JSON OBJECT WHICH WILL BE SENT TO THE USER
                     response.put("endpoint", request);
                     response.put("response", result);
                     // CHECK IF USER SAVED SUCCESSFULLY IN THE DATABASE OR NOT
                     if (result) {
+                        // CONNECT USER PRIMARY KEY WITH HIS SOCKET IN THE SERVER
                         this.phone = payload.getString("phone");
                         // PUT THE RESPONSE FOR THE SUCCESS REQUEST IN THE JSON OBJECT
                         response.put("description", "User added successfully");
@@ -101,17 +104,22 @@ public class ClientSocket implements Runnable {
                         response.put("description", "failed to add user");
                     }
                     // SEND THE JSON OBJECT AS STRING
-                    System.out.println(response.toString());
                     this.sender.println(response.toString());
-                } else if (request.equals("login")) {
-                    System.out.println("login");
+                }
+                // CHECK IF REQUEST IS FOR LOGIN
+                else if (request.equals("login")) {
+                    // GET USER DATA FROM PAYLOAD SECTION IN THE RECEIVED JSON OBJECT
                     String phoneNumber = payload.getString("phone");
                     String password = payload.getString("password");
+                    // AUTHENTICATE THE USER
                     User result = this.userServices.authenticateUser(phoneNumber, password);
+                    // ADD THE END POINT WHICH THE RESPONSE WILL BE SENT TO IT
                     response.put("endpoint", request);
+                    // CHECK IF THE USER FOUND IN THE DATABASE SO SEND SUCCESS RESPONSE ELSE SEND FAIL RESPONSE
                     if (result != null) {
                         this.phone = phoneNumber;
                         this.userServices.setUserStatus(true, this.phone);
+                        // GET USER FRIENDS FROM THE DATABASE TO SEND THEM IN RESPONSE PAYLOAD SECTION
                         List<JSONObject> friendsList = this.userServices.getUserFriends(phone);
                         response.put("response", true);
                         response.put("description", "got friend list successfully");
@@ -132,22 +140,24 @@ public class ClientSocket implements Runnable {
                     User senderUser = userServices.getUser(this.phone);
                     // GET RECEIVER USER
                     User receiverUser = userServices.getUser(payload.getString("sendTo"));
-                    // CREATE NEW USER AND PUT THE DATA OF THE NEW MESSAGE IN IT FROM PAYLOAD SECTION
                     Message newMessage = null;
+                    // CHECK IF THE MESSAGE WHICH WAS SENT IS TEXT MESSAGE OR FILE
                     if ( payload.getString("type").equals("message")){
+                        // CREATE TEXT MESSAGE
                         newMessage = new Message(payload.getString("messageText"), payload.getString("type"), null, new Timestamp(new Date().getTime()));
                     }else {
+                        // CREATE FILE MESSAGE
                         newMessage = new Message(payload.getString("messageText"), payload.getString("type"),  payload.getString("file"), new Timestamp(new Date().getTime()));
-//                        byte dearr[] = Base64.decodeBase64(newMessage.getFile());
-//                        OutputStream stream = new FileOutputStream("/home/mohamedkamal/Documents/sent.png");
-//                        stream.write(dearr);
-
                     }
+                    // SET SENDER AND RECEIVER IN THE MESSAGE OBJECT
                     newMessage.setTheSender(senderUser);
                     newMessage.setTheReceiver(receiverUser);
+                    // GET RESULT OF SAVING THE MESSAGE
                     boolean result = this.userServices.sendMessage(newMessage, payload);
+                    // FILLING THE JSON ENDPOINT AND RESPONSE SECTION
                     response.put("endpoint", request);
                     response.put("response", result);
+                    // CHECK IF MESSAGE SENT AND SAVED IN THE DATABASE WELL AND THEN DESCRIPTION TO USER
                     if (result) {
                         response.put("description", "Message was sent successfully");
                     } else {
@@ -155,11 +165,15 @@ public class ClientSocket implements Runnable {
                     }
                     // SEND THE JSON OBJECT AS STRING
                     this.sender.println(response.toString());
-                } else if (request.equals("getConversation")) {
+                }
+                // CHECK IF REQUEST IS FOR GETTING CONVERSATION
+                else if (request.equals("getConversation")) {
                     String senderPhone = this.phone;
                     String receiverPhone =  payload.getString("friendPhone");
+                    // GET THE CONVERSATION BETWEEN THE SENDER AND RECEIVER
                     JSONArray conversation= this.userServices.getConversation(senderPhone, receiverPhone);
                     response.put("endpoint", request);
+                    // CHECK IF THERE IS CONVERSATION OR THIS IS THE FIRST TIME TO CHAT
                     if (conversation != null){
                         response.put("response", true);
                         response.put("payload", conversation);
@@ -169,29 +183,47 @@ public class ClientSocket implements Runnable {
                     }
                     // SEND THE JSON OBJECT AS STRING
                     this.sender.println(response.toString());
-                } else if (request.equals("addFriend")) {
+                }
+                // CHECK IF REQUEST IS FOR ADDING FRIEND
+                else if (request.equals("addFriend")) {
                     String phone = payload.getString("phone");
+                    // RESPONSE OF ADDING FRIEND REQUEST
                     boolean result = this.userServices.addFriend(this.phone, phone);
+                    // ADD ENDPOINT TO SEND TO
                     response.put("endpoint", request);
+                    // ADD THE RESPONSE IN THE JSON OBJECT TO BE SENT
                     response.put("response", result);
+                    // CHECK IF THE USER ADDED SUCCESSFULLY OR FAILED
                     if (result) {
+                        // SEND THE USER DATA TO SENDER
                         response.put("description", "Friend is addded successfully");
                         User theUser = this.userServices.getUser(phone);
                         theUser.setPassword(null);
                         response.put("payload", new JSONObject(theUser.jsonString()));
                         this.userServices.notifyNewFriend(this.phone, phone);
                     } else {
+                        // SEND RESPONSE THAT PHONE NOT FOUND
                         response.put("description", "This phone is not found");
                     }
                     this.sender.println(response.toString());
-                } else if (request.equals("logout")) {
+                }
+                // CHECK IF REQUEST IS FOR LOGGING OUT
+                else if (request.equals("logout")) {
+                    /* IF USER LOGGED OUT CHANGE USER TO OFFLINE AND SAVE THE
+                     * TIME OF HIS LAST SEEN & BREAK TO END THIS SOCKET THREAD
+                     */
                     this.userServices.setUserStatus(false, this.phone);
-                    this.userServices.saveLastLogin(this.phone);
+                    this.userServices.saveLastSeen(this.phone);
                     break;
                 }
-            } catch (IOException e) {
+            }
+            /* IF USER CLOSED THE APP SERVER WILL GET IOEXCEPTION SO HANDLE IT BY
+             *CHANGE USER TO OFFLINE AND SAVE THE TIME OF HIS LAST SEEN
+             * & BREAK TO END THIS SOCKET THREAD
+             */
+            catch (IOException e) {
                 this.userServices.setUserStatus(false, this.phone);
-                this.userServices.saveLastLogin(this.phone);
+                this.userServices.saveLastSeen(this.phone);
                 break;
             }
         }

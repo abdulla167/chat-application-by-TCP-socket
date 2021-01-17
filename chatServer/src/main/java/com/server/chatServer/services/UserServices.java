@@ -20,9 +20,7 @@ public interface UserServices {
 
     public JSONArray getConversation(String senderPhone, String receiverPhone);
 
-    public void saveLastLogin(String phone);
-
-    public List<Message> getNewMessages(String receiverPhone);
+    public void saveLastSeen(String phone);
 
     public User getUser(String phone);
 
