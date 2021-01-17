@@ -169,6 +169,7 @@ public class ClientSocket implements Runnable {
                     String senderPhone = this.phone;
                     String receiverPhone =  payload.getString("friendPhone");
                     JSONArray conversation= this.userServices.getConversation(senderPhone, receiverPhone);
+                    response.put("endpoint", request);
                     if (conversation != null){
                         response.put("response",true);
                         response.put("description", conversation);
