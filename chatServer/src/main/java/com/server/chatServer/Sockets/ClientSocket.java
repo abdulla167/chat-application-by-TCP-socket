@@ -146,9 +146,9 @@ public class ClientSocket implements Runnable {
                         newMessage = new Message(payload.getString("message"), payload.getString("type"),  null, new Timestamp(new Date().getTime()));
                     }else{
                         newMessage = new Message(payload.getString("message"), payload.getString("type"),  payload.getString("file"), new Timestamp(new Date().getTime()));
-                        byte dearr[] = Base64.decodeBase64(newMessage.getFile());
-                        OutputStream stream = new FileOutputStream("/home/mohamedkamal/Documents/sent.png");
-                        stream.write(dearr);
+//                        byte dearr[] = Base64.decodeBase64(newMessage.getFile());
+//                        OutputStream stream = new FileOutputStream("/home/mohamedkamal/Documents/sent.png");
+//                        stream.write(dearr);
 
                     }
                     newMessage.setTheSender(senderUser);
