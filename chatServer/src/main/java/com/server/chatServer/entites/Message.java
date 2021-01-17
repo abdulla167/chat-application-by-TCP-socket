@@ -25,16 +25,24 @@ public class Message implements Serializable {
     @Column(name = "message")
     private String message;
 
+    @Column(name = "description")
+    private String description;
+
+    @Lob
+    @Column(name = "file")
+    private String file;
+
     @Column(name = "date")
     private Timestamp date;
 
     public Message(){}
 
-    public Message(String message, Timestamp time) {
+    public Message(String message, String description,String file, Timestamp date) {
         this.message = message;
-        this.date = time;
+        this.description = description;
+        this.file = file;
+        this.date = date;
     }
-
 
     public int getId() {
         return id;
@@ -76,6 +84,22 @@ public class Message implements Serializable {
         this.date = date;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
+    }
+
     @Override
     public String toString() {
         return "Message{" +
@@ -87,6 +111,6 @@ public class Message implements Serializable {
     }
 
     public String jsonString() {
-        return "{\"sendTo\":" + this.theSender.getPhone() + ",\"sendFrom\":" + this.theReceiver.getPhone() + ",\"messageText\":" + this.message + ",\"date\":" + this.date.toString() +"}";
+        return "{\"sendTo\":" + this.theReceiver.getPhone() + ",\"sendFrom\":" + this.theSender.getPhone() + ",\"messageText\":" + this.message +"}";
     }
 }

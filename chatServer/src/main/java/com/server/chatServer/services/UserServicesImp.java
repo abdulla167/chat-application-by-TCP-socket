@@ -5,6 +5,7 @@ import com.server.chatServer.Sockets.ClientSocket;
 import com.server.chatServer.Sockets.ServerSocket;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -31,8 +32,8 @@ public class UserServicesImp implements UserServices {
     public boolean registerNewUser(User newUser) {
         try {
             boolean check = userDAO.registerUser(newUser);
-            return check;
-        } catch (Exception e){
+            return  check? true: false;
+        }catch (Exception e){
             return false;
         }
     }
@@ -64,10 +65,8 @@ public class UserServicesImp implements UserServices {
             if (client.getPhone().equals(theMessage.getTheReceiver().getPhone())){
                 JSONObject json = new JSONObject();
                 json.put("endpoint", "receivedMessage");
-                System.out.println(theMessage.jsonString());
                 json.put("payload", payload);
                 client.getSender().println(json.toString());
-                System.out.println(json.toString());
             }
         }
         return userDAO.saveMessage(theMessage);
@@ -75,14 +74,15 @@ public class UserServicesImp implements UserServices {
 
     @Override
     @Transactional
-    public List<JSONObject> getConversation(String senderPhone, String receiverPhone) {
+    public JSONArray getConversation(String senderPhone, String receiverPhone) {
         List<Message> messages = this.userDAO.getConversation(senderPhone, receiverPhone);
+        String jsonList = "";
+        JSONArray jsonArray = new JSONArray();
         if (messages != null){
-            List<JSONObject> jsonMessagesList = new ArrayList<>(messages.size());
             for (Message message : messages){
-                jsonMessagesList.add(new JSONObject(message.jsonString()));
+                jsonArray.put(new JSONObject(message.jsonString()));
             }
-            return jsonMessagesList;
+            return jsonArray;
         }else {
             return null;
         }

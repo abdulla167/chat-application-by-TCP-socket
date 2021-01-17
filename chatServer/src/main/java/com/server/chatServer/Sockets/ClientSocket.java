@@ -3,15 +3,13 @@ package com.server.chatServer.Sockets;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
 import com.server.chatServer.services.UserServices;
+import org.apache.tomcat.util.codec.binary.Base64;
 import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.PrintWriter;
+import java.io.*;
 import java.net.Socket;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -89,6 +87,7 @@ public class ClientSocket implements Runnable {
                     User newUser = new User(payload.getString("phone"), payload.getString("username"), payload.getString("password"));
                     newUser.setActive(true);
                     boolean result = this.userServices.registerNewUser(newUser);
+                    System.out.println("repqeated"+result);
                     response.put("endpoint", request);
                     response.put("response", result);
                     // CHECK IF USER SAVED SUCCESSFULLY IN THE DATABASE OR NOT
@@ -134,7 +133,16 @@ public class ClientSocket implements Runnable {
                     // GET RECEIVER USER
                     User receiverUser = userServices.getUser(payload.getString("sendTo"));
                     // CREATE NEW USER AND PUT THE DATA OF THE NEW MESSAGE IN IT FROM PAYLOAD SECTION
-                    Message newMessage = new Message(payload.getString("messageText"), new Timestamp(new Date().getTime()));
+                    Message newMessage = null;
+                    if ( payload.getString("type").equals("message")){
+                        newMessage = new Message(payload.getString("messageText"), payload.getString("type"), null, new Timestamp(new Date().getTime()));
+                    }else {
+                        newMessage = new Message(payload.getString("messageText"), payload.getString("type"),  payload.getString("file"), new Timestamp(new Date().getTime()));
+//                        byte dearr[] = Base64.decodeBase64(newMessage.getFile());
+//                        OutputStream stream = new FileOutputStream("/home/mohamedkamal/Documents/sent.png");
+//                        stream.write(dearr);
+
+                    }
                     newMessage.setTheSender(senderUser);
                     newMessage.setTheReceiver(receiverUser);
                     boolean result = this.userServices.sendMessage(newMessage, payload);
@@ -149,14 +157,14 @@ public class ClientSocket implements Runnable {
                     this.sender.println(response.toString());
                 } else if (request.equals("getConversation")) {
                     String senderPhone = this.phone;
-                    String receiverPhone = payload.getString("friendPhone");
+                    String receiverPhone =  payload.getString("friendPhone");
+                    JSONArray conversation= this.userServices.getConversation(senderPhone, receiverPhone);
                     response.put("endpoint", request);
-                    List<JSONObject> conversation = this.userServices.getConversation(senderPhone, receiverPhone);
-                    if (conversation != null) {
+                    if (conversation != null){
                         response.put("response", true);
                         response.put("payload", conversation);
-                    } else {
-                        response.put("response", true);
+                    }else {
+                        response.put("response", false);
                         response.put("payload", new ArrayList<>());
                     }
                     // SEND THE JSON OBJECT AS STRING
