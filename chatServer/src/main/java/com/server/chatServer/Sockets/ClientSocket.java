@@ -115,7 +115,6 @@ public class ClientSocket implements Runnable {
                     System.out.println("login");
                     String phoneNumber = payload.getString("phone");
                     String password = payload.getString("password");
-                    List<User> l = new ArrayList<>();
                     User result = this.userServices.authenticateUser(phoneNumber, password);
                     response.put("endpoint",request);
                     response.put("response", result);
@@ -130,7 +129,7 @@ public class ClientSocket implements Runnable {
                     }
                     else{
                         response.put("description", "invalid user or password");
-                        response.put("payload",l);
+                        response.put("payload",new ArrayList<>());
                     }
                     // SEND THE JSON OBJECT AS STRING
                     this.sender.println(response.toString());
@@ -159,10 +158,15 @@ public class ClientSocket implements Runnable {
                 }
                 else if(request.equals("getConversation")){
                     String senderPhone = this.phone;
-                    String receiverPhone =  payload.getString("phone");
-                    List<Message> conversation = this.userServices.getConversation(senderPhone, receiverPhone);
-                    response.put("response",true);
-                    response.put("description", conversation);
+                    String receiverPhone =  payload.getString("friendPhone");
+                    List<JSONObject> conversation = this.userServices.getConversation(senderPhone, receiverPhone);
+                    if (conversation != null){
+                        response.put("response",true);
+                        response.put("description", conversation);
+                    }else {
+                        response.put("response",false);
+                        response.put("description", new ArrayList<>());
+                    }
                     // SEND THE JSON OBJECT AS STRING
                     this.sender.println(response.toString());
                 }
@@ -181,6 +185,11 @@ public class ClientSocket implements Runnable {
                         response.put("description", "This phone is not found");
                     }
                     this.sender.println(response.toString());
+                }
+                else if(request.equals("logout")){
+                    this.userServices.setUserStatus(false, this.phone);
+                    this.userServices.saveLastLogin(this.phone);
+                    break;
                 }
             } catch (IOException e) {
                 this.userServices.setUserStatus(false, this.phone);

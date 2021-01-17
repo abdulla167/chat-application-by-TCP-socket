@@ -62,7 +62,7 @@ public class UserServicesImp implements UserServices {
         {
             if (client.getPhone().equals(theMessage.getTheReceiver())){
                 JSONObject json = new JSONObject();
-                json.put("endpoint","sendMessage");
+                json.put("endpoint","receiveMessage");
                 json.put("payload",theMessage.jsonString());
                 client.getSender().println(json.toString());
             }
@@ -72,8 +72,17 @@ public class UserServicesImp implements UserServices {
 
     @Override
     @Transactional
-    public List<Message> getConversation(String senderPhone, String receiverPhone) {
-        return null;
+    public List<JSONObject> getConversation(String senderPhone, String receiverPhone) {
+        List<Message> messages = this.userDAO.getConversation(senderPhone, receiverPhone);
+        if (messages != null){
+            List<JSONObject> jsonMessagesList = new ArrayList<>(messages.size());
+            for (Message message : messages){
+                jsonMessagesList.add(new JSONObject(message.jsonString()));
+            }
+            return jsonMessagesList;
+        }else {
+            return null;
+        }
     }
 
     @Override
