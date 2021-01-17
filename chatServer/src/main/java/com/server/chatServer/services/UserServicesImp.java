@@ -7,6 +7,7 @@ import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -30,8 +31,8 @@ public class UserServicesImp implements UserServices {
     public boolean registerNewUser(User newUser) {
         try {
             boolean check = userDAO.registerUser(newUser);
-            return true;
-        }catch (Exception e){
+            return check;
+        } catch (Exception e){
             return false;
         }
     }
@@ -56,15 +57,17 @@ public class UserServicesImp implements UserServices {
 
     @Override
     @Transactional
-    public boolean sendMessage(Message theMessage) {
+    public boolean sendMessage(Message theMessage, JSONObject payload) {
         List<ClientSocket> clientSockets = ServerSocket.getClients();
         for (ClientSocket client : clientSockets)
         {
-            if (client.getPhone().equals(theMessage.getTheReceiver())){
+            if (client.getPhone().equals(theMessage.getTheReceiver().getPhone())){
                 JSONObject json = new JSONObject();
-                json.put("endpoint","receiveMessage");
-                json.put("payload",theMessage.jsonString());
+                json.put("endpoint", "receivedMessage");
+                System.out.println(theMessage.jsonString());
+                json.put("payload", payload);
                 client.getSender().println(json.toString());
+                System.out.println(json.toString());
             }
         }
         return userDAO.saveMessage(theMessage);

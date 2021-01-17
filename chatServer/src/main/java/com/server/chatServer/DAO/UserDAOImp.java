@@ -5,6 +5,7 @@ import com.server.chatServer.entites.User;
 import org.hibernate.Session;
 import org.hibernate.query.Query;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Repository;
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
@@ -24,10 +25,15 @@ public class UserDAOImp implements UserDAO{
     }
 
     @Override
-    public boolean registerUser(User user) {
+    public boolean registerUser(User user)  {
         System.out.println(entityManager);
         Session newSession = entityManager.unwrap(Session.class);
-        newSession.save(user);
+        try {
+            newSession.save(user);
+        } catch (DataIntegrityViolationException d){
+          return false;
+        }
+
         return true;
     }
 

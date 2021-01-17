@@ -16,7 +16,7 @@ public interface UserServices {
 
     public List<JSONObject> getUserFriends(String phone);
 
-    public boolean sendMessage(Message theMessage);
+    public boolean sendMessage(Message theMessage, JSONObject payload);
 
     public List<JSONObject> getConversation(String senderPhone, String receiverPhone);
 

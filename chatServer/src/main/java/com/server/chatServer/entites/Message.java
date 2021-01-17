@@ -87,6 +87,6 @@ public class Message implements Serializable {
     }
 
     public String jsonString() {
-        return "{\"sendTo\":" + this.theSender.getPhone() + ",\"sendFrom\":" + this.theReceiver.getPhone() + ",\"message\":" + this.message + ",\"date\":" + this.date+"}";
+        return "{\"sendTo\":" + this.theSender.getPhone() + ",\"sendFrom\":" + this.theReceiver.getPhone() + ",\"messageText\":" + this.message + ",\"date\":" + this.date.toString() +"}";
     }
 }
