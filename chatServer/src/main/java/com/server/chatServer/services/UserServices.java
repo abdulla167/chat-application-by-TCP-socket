@@ -1,8 +1,8 @@
 package com.server.chatServer.services;
 
-import com.server.chatServer.DAO.UserDAOImp;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
+import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.List;
@@ -18,7 +18,7 @@ public interface UserServices {
 
     public boolean sendMessage(Message theMessage);
 
-    public List<JSONObject> getConversation(String senderPhone, String receiverPhone);
+    public JSONArray getConversation(String senderPhone, String receiverPhone);
 
     public void saveLastLogin(String phone);
 

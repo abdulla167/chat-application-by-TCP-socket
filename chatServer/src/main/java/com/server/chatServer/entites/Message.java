@@ -25,16 +25,24 @@ public class Message implements Serializable {
     @Column(name = "message")
     private String message;
 
+    @Column(name = "description")
+    private String description;
+
+    @Lob
+    @Column(name = "file")
+    private String file;
+
     @Column(name = "date")
     private Timestamp date;
 
     public Message(){}
 
-    public Message(String message, Timestamp time) {
+    public Message(String message, String description,String file, Timestamp date) {
         this.message = message;
-        this.date = time;
+        this.description = description;
+        this.file = file;
+        this.date = date;
     }
-
 
     public int getId() {
         return id;
@@ -74,6 +82,22 @@ public class Message implements Serializable {
 
     public void setDate(Timestamp date) {
         this.date = date;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getFile() {
+        return file;
+    }
+
+    public void setFile(String file) {
+        this.file = file;
     }
 
     @Override

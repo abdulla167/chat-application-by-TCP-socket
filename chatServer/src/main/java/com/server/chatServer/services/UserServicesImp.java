@@ -5,6 +5,7 @@ import com.server.chatServer.Sockets.ClientSocket;
 import com.server.chatServer.Sockets.ServerSocket;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,7 @@ public class UserServicesImp implements UserServices {
     public boolean registerNewUser(User newUser) {
         try {
             boolean check = userDAO.registerUser(newUser);
-            return true;
+            return  check? true: false;
         }catch (Exception e){
             return false;
         }
@@ -72,14 +73,16 @@ public class UserServicesImp implements UserServices {
 
     @Override
     @Transactional
-    public List<JSONObject> getConversation(String senderPhone, String receiverPhone) {
+    public JSONArray getConversation(String senderPhone, String receiverPhone) {
         List<Message> messages = this.userDAO.getConversation(senderPhone, receiverPhone);
+        String jsonList = "";
+        JSONArray jsonArray = new JSONArray();
         if (messages != null){
-            List<JSONObject> jsonMessagesList = new ArrayList<>(messages.size());
             for (Message message : messages){
-                jsonMessagesList.add(new JSONObject(message.jsonString()));
+                jsonArray.put(message);
             }
-            return jsonMessagesList;
+
+            return jsonArray;
         }else {
             return null;
         }

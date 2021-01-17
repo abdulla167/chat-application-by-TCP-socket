@@ -25,13 +25,18 @@ public class UserDAOImp implements UserDAO{
 
     @Override
     public boolean registerUser(User user) {
-        try {
-            User theUser = this.getUser(user.getPhone());
-            return false;
-        }catch (NoResultException nre){
+        System.out.println("registerUser");
+
+        User theUser = this.getUser(user.getPhone());
+        System.out.println(theUser);
+        System.out.println("this user: ");
+        if (theUser==null){
             Session newSession = entityManager.unwrap(Session.class);
             newSession.save(user);
             return true;
+
+        }else{
+            return false;
         }
     }
 
@@ -51,10 +56,11 @@ public class UserDAOImp implements UserDAO{
         User receiver = this.getUser(receiverPhone);
         Session newSession = entityManager.unwrap(Session.class);
         try{
+            System.out.println("getConv");
             Query theQuery =
-                    newSession.createQuery("from message where message.theSender=:senderNumber  and message.theReceiver=:receiverNumber");
-            theQuery.setParameter("senderNumber", sender.getPhone());
-            theQuery.setParameter("receiverNumber", receiver.getPhone());
+                    newSession.createQuery("from message where (theSender.phone=:senderNumber  and theReceiver.phone=:receiverNumber)or " +
+                            "(theSender.phone=:receiverNumber  and theReceiver.phone=:senderNumber)");
+            theQuery.setParameter("senderNumber", sender.getPhone()).setParameter("receiverNumber", receiver.getPhone());
             List<Message> messages = (List<Message>) theQuery.getResultList();
             return messages;
         }catch (Exception e){
@@ -75,10 +81,15 @@ public class UserDAOImp implements UserDAO{
         try{
             User theFriend = this.getUser(friendPhone);
             User theUser = this.getUser(userPhone);
-            theUser.addFriend(theFriend);
-            Session newSession = entityManager.unwrap(Session.class);
-            newSession.save(theUser);
-            return true;
+
+            if (theUser.getFriends().contains(theFriend)){
+                return false;
+            }else{
+                theUser.addFriend(theFriend);
+                Session newSession = entityManager.unwrap(Session.class);
+                newSession.save(theUser);
+                return true;
+            }
         }
         catch (NoResultException nre){
             return false;
@@ -116,8 +127,14 @@ public class UserDAOImp implements UserDAO{
         Session newSession = entityManager.unwrap(Session.class);
         Query theQuery =
                 newSession.createQuery("from user where phone=:number").setParameter("number", phone);
-        User theUser = (User) theQuery.getSingleResult();
-        return theUser;
+        System.out.println("getUser ");
+       List< User> theUsers =  theQuery.getResultList();
+        System.out.println("getUser ARRAY LENGTH" + theUsers.toArray().length);
+       if(theUsers.toArray().length ==0){
+           return null;
+       }else {
+            return theUsers.get(0);
+        }
     }
 
 }
