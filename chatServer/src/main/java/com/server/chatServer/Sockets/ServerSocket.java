@@ -43,6 +43,7 @@ public class ServerSocket {
             client.setClientConnection(clientSocket);
             Thread th = new Thread(client);
             th.start();
+
             this.clients.add(client);
         }
     }

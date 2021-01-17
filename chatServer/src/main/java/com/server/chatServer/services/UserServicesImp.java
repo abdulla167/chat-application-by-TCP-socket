@@ -3,11 +3,12 @@ package com.server.chatServer.services;
 import com.server.chatServer.DAO.UserDAO;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Access;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -35,14 +36,20 @@ public class UserServicesImp implements UserServices {
 
     @Override
     @Transactional
-    public boolean authenticateUser(String phone, String password) {
+    public User authenticateUser(String phone, String password) {
         return this.userDAO.authenticateUser(phone, password);
     }
 
     @Override
     @Transactional
-    public List<User> getUserFriends(String phone) {
-        return this.userDAO.getUserFriends(phone);
+    public List<JSONObject> getUserFriends(String phone) {
+        List<User> friends = this.userDAO.getUserFriends(phone);
+        List<JSONObject> friendsJsonList = new ArrayList<>(friends.size());
+        for (User user:friends){
+            friendsJsonList.add(new JSONObject(user.jsonString()));
+        }
+
+        return friendsJsonList;
     }
 
     @Override

@@ -32,12 +32,12 @@ public class UserDAOImp implements UserDAO{
     }
 
     @Override
-    public boolean authenticateUser(String phone, String password) {
+    public User authenticateUser(String phone, String password) {
         try {
             User theUser = this.getUser(phone);
-            return true;
+            return theUser;
         }catch (NoResultException nre){
-            return false;
+            return null;
         }
     }
 

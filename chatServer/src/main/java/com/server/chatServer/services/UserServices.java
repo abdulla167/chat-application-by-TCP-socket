@@ -3,6 +3,7 @@ package com.server.chatServer.services;
 import com.server.chatServer.DAO.UserDAOImp;
 import com.server.chatServer.entites.Message;
 import com.server.chatServer.entites.User;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -11,9 +12,9 @@ public interface UserServices {
 
     public boolean registerNewUser(User newUser);
 
-    public boolean authenticateUser(String phone, String password);
+    public User authenticateUser(String phone, String password);
 
-    public List<User> getUserFriends(String phone);
+    public List<JSONObject> getUserFriends(String phone);
 
     public boolean sendMessage(Message theMessage);
 
