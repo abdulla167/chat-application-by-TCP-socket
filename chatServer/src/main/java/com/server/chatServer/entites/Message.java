@@ -111,6 +111,6 @@ public class Message implements Serializable {
     }
 
     public String jsonString() {
-        return "{\"sendTo\":" + this.theReceiver.getPhone() + ",\"sendFrom\":" + this.theSender.getPhone() + ",\"messageText\":" + this.message +"}";
+        return "{\"sendTo\":" + "\""+ this.theReceiver.getPhone()  +"\""+  ",\"sendFrom\":" +  "\""+ this.theSender.getPhone()  +"\""+ ",\"messageText\":" +  "\""+this.message + "\""+",\"file\":"+ "\""+ this.getFile()  +"\""+ ",\"type\":"+  "\""+this.description +"\"" + "}";
     }
 }
