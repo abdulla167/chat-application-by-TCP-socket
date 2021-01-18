@@ -1,0 +1,15 @@
+<form fxLayout="column" (ngSubmit)="login()">
+  <mat-form-field appearance="outline">
+    <input name="phone" matInput placeholder="phone" [(ngModel)]="phone" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <input name="password" matInput placeholder="password" [(ngModel)]="password" type="password" required>
+  </mat-form-field>
+  <mat-hint *ngIf="hintError">
+    <span style="color: red">phone or password invalid</span></mat-hint>
+  <button mat-raised-button color="primary" type="submit">
+    login
+  </button>
+</form>
+

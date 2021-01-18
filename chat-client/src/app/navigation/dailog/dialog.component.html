@@ -1,0 +1,12 @@
+<div mat-dialog-content>
+  <mat-form-field>
+    <mat-label>Phone Number</mat-label>
+    <input matInput [(ngModel)]="data" autocomplete="off">
+    <mat-spinner matSuffix *ngIf="spin" [diameter]="22"></mat-spinner>
+    <mat-hint *ngIf="showError"><span style="color: red">Friend not found</span></mat-hint>
+  </mat-form-field>
+</div>
+<div mat-dialog-actions>
+  <button mat-button (click)="onAddClick()" color="primary">add</button>
+  <button mat-button (click)="onCancelClick()">Cancel</button>
+</div>

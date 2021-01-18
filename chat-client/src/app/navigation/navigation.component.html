@@ -1,0 +1,76 @@
+<mat-sidenav-container class="sidenav-container">
+  <mat-sidenav #drawer class="sidenav" fixedInViewport
+      [mode]="(isHandset$ | async) ? 'over' : 'side'"
+      [opened]="(isHandset$ | async) === false">
+    <div fxLayout="column">
+      <mat-toolbar color="primary"  fxLayout="row" fxLayoutAlign="space-between center" class="mat-toolbar-padding">
+        <div fxLayout="row">
+          <mat-icon>person</mat-icon> {{user.username}}
+        </div>
+        <button mat-icon-button (click)="addFriend()">
+              <mat-icon>add</mat-icon>
+        </button>
+        <button mat-icon-button (click)="logout()">
+          <mat-icon>logout</mat-icon>
+        </button>
+      </mat-toolbar>
+      <mat-nav-list *ngIf="friendList.length != 0">
+        <app-person *ngFor="let friend of friendList" [friend]="friend" (onSelect)="updateSelectedFriend($event)"></app-person>
+      </mat-nav-list>
+
+      <button
+        mat-raised-button class="big-font margin-top"
+        *ngIf="friendList.length == 0"
+        (click)="addFriend()">
+        Add friend <mat-icon class="big-font">add</mat-icon>
+      </button>
+    </div>
+
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="chat-container"
+         fxLayout="column"
+         fxLayoutAlign="center" *ngIf="showChat">
+
+      <app-chat-header (buttonClick)="drawer.toggle()" [personName]="selectedFriend.username"></app-chat-header>
+
+      <div class="messages-container" fxLayout="column">
+          <div *ngFor="let message of messages; index as i;trackBy: trackByFn" fxLayout="column">
+
+            <div *ngIf="message.sendFrom === user.phone; else friendMessage" fxFlexAlign="end">
+              <mat-chip-list *ngIf="message.type == 'message'; else file">
+                <mat-chip color="primary" selected >{{message.messageText}}</mat-chip>
+              </mat-chip-list>
+
+              <ng-template #file>
+                <mat-chip-list>
+                  <mat-chip color="primary" selected (click)="saveFile(i)">
+                    <span class="underline">{{message.messageText}}</span>
+                  </mat-chip>
+                </mat-chip-list>
+              </ng-template>
+
+            </div>
+            <ng-template #friendMessage>
+              <div fxFlexAlign="start">
+                <mat-chip-list *ngIf="message.type == 'message'; else file">
+                  <mat-chip color="accent" selected >{{message.messageText}}</mat-chip>
+                </mat-chip-list>
+                <ng-template #file>
+                  <mat-chip-list>
+                    <mat-chip color="accent" selected (click)="saveFile(i)">
+                      <span class="underline">{{message.messageText}}</span>
+                    </mat-chip>
+                  </mat-chip-list>
+                </ng-template>
+              </div>
+            </ng-template>
+
+          </div>
+      </div>
+
+      <app-chat-controls (messageAdded)="sendMessage($event)" (fileSelected)="uploadFile($event)"></app-chat-controls>
+    </div>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+

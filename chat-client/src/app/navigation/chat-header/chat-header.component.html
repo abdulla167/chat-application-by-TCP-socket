@@ -1,0 +1,9 @@
+<mat-toolbar class="fixed">
+  {{personName}}
+  <button
+    (click)="buttonClick.emit()"
+    mat-icon-button
+    *ngIf="isHandset$ | async">
+    <mat-icon>contacts</mat-icon>
+  </button>
+</mat-toolbar>

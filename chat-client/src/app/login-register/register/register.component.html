@@ -1,0 +1,18 @@
+<form fxLayout="column" (ngSubmit)="register()">
+  <mat-form-field appearance="outline">
+    <input name="name" matInput placeholder="your name" [(ngModel)]="username" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <input name="phone" matInput placeholder="your phone" [(ngModel)]="phone" required>
+  </mat-form-field>
+
+  <mat-form-field appearance="outline">
+    <input name="password" matInput placeholder="password" type="password" [(ngModel)]="password" required>
+  </mat-form-field>
+
+  <mat-hint *ngIf="hintError"> <span style="color: red"> user already registered</span></mat-hint>
+  <button mat-raised-button color="primary" type="submit">
+    Register
+  </button>
+</form>
